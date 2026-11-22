@@ -1,6 +1,6 @@
 # Ars ReSources
 
-NeoForge 1.21.1 addon for Ars Nouveau. Mod id `resources` (display name "Ars ReSources"), maven group `fun.dungeon.debauchery`, artifact `ars_resources`, package `fun.dungeon.debauchery.arsresources`. It will be published on CurseForge; the CurseForge project isn't set up yet.
+NeoForge 1.21.1 addon for Ars Nouveau. Mod id `resources` (display name "Ars ReSources"), maven group `fun.dungeon.debauchery`, artifact `ars_resources`, package `fun.dungeon.debauchery.arsresources`. 
 
 It adds one block, the **Source Vessel** (`resources:source_vessel`):
 - Right-click it with an item to set the template; right-click with an empty hand to take the template back. The template is never consumed.
@@ -8,6 +8,15 @@ It adds one block, the **Source Vessel** (`resources:source_vessel`):
 - Each time it has stored the item's configured cost, it puts one copy into an inventory linked with the Dominion Wand. The copy flies there using Ars Nouveau's `EntityFlyingItem` animation.
 - It pauses (and takes no source) when nothing is linked, when the linked inventories are full, or when the item isn't configured.
 - It can be dyed when Ars Deco is installed.
+
+## Repository & releases
+- Git repo: `git@github.com:legoGonkDroid/ArsReSources.git` (branch `main`, MIT license). The GitHub account was renamed from `jarroyer` to `legoGonkDroid`.
+- CurseForge project: https://www.curseforge.com/minecraft/mc-mods/ars-resources
+- Release flow:
+  1. Bump `mod_version` in `gradle.properties` and commit.
+  2. `git tag -a v<version> -m ... && git push origin v<version>`.
+  3. `.github/workflows/release.yml` then checks that the tag matches `mod_version`, builds, runs the GameTests, and publishes the jar with `Kir-Antipov/mc-publish` to CurseForge (dependencies: Ars Nouveau required; Ars Deco and EMI optional) and to a GitHub release.
+- Required repo settings: the secret `CURSEFORGE_TOKEN` and the variable `CURSEFORGE_PROJECT_ID` (the numeric Project ID).
 
 ## Build / test
 - `./gradlew build` → `build/libs/ars_resources-1.21.1-<version>.jar`. The wrapper is Gradle 9.8; Java 21 comes from the foojay toolchain resolver.
