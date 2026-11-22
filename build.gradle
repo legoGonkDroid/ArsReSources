@@ -1,0 +1,119 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'net.neoforged.moddev' version '2.0.148'
+}
+
+version = mod_version
+group = mod_group_id
+
+base {
+    archivesName = "ars_resources-${minecraft_version}"
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+neoForge {
+    version = project.neo_version
+
+    parchment {
+        mappingsVersion = project.parchment_mappings_version
+        minecraftVersion = project.parchment_minecraft_version
+    }
+
+    runs {
+        client {
+            client()
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+        server {
+            server()
+            programArgument '--nogui'
+        }
+        // ./gradlew runGameTestServer: runs the GameTests in fun.dungeon.debauchery.arsresources.gametest and exits.
+        gameTestServer {
+            type = 'gameTestServer'
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+        configureEach {
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
+            logLevel = org.slf4j.event.Level.DEBUG
+        }
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
+        }
+    }
+}
+
+// Dependencies only for the dev runs: on the runtime classpath, not published as dependencies.
+configurations {
+    localRuntime
+    runtimeClasspath.extendsFrom localRuntime
+}
+
+repositories {
+    maven { name = 'BlameJared (Ars Nouveau, Nuggets, JEI)'; url = 'https://maven.blamejared.com' }
+    maven { name = 'GeckoLib'; url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
+    maven { name = 'Curios'; url = 'https://maven.theillusivec4.top/' }
+    maven { name = 'TerraformersMC (EMI)'; url = 'https://maven.terraformersmc.com/releases' }
+    // Optional local jars (e.g. Ars Deco for testing dyeing in dev). Not committed.
+    flatDir { dirs 'libs' }
+}
+
+dependencies {
+    // Ars Nouveau is the only hard dependency. Its POM drags in many runtime-only
+    // mods (JEI, Jade, TerraBlender...), so take it non-transitively and add what it needs.
+    implementation("com.hollingsworth.ars_nouveau:ars_nouveau-1.21.1:${ars_nouveau_version}") { transitive = false }
+    implementation "software.bernie.geckolib:geckolib-neoforge-1.21.1:${geckolib_version}"
+    implementation "top.theillusivec4.curios:curios-neoforge:${curios_version}"
+
+    // EMI is optional: compile against its API only; the full mod is added to dev runs to see the recipe tab.
+    compileOnly "dev.emi:emi-neoforge:${emi_version}:api"
+    localRuntime "dev.emi:emi-neoforge:${emi_version}"
+
+    // Ars Deco is not on a maven and is only an optional runtime integration (see ArsDecoTargetsMixin).
+    // Drop the jar into libs/ to test dyeing from the dev client.
+    fileTree(dir: 'libs', include: '*.jar').each { localRuntime files(it) }
+}
+
+var generateModMetadata = tasks.register('generateModMetadata', ProcessResources) {
+    var replaceProperties = [
+            minecraft_version      : minecraft_version,
+            minecraft_version_range: minecraft_version_range,
+            neo_version            : neo_version,
+            neo_version_range      : neo_version_range,
+            loader_version_range   : loader_version_range,
+            ars_nouveau_version_range: ars_nouveau_version_range,
+            mod_id                 : mod_id,
+            mod_name               : mod_name,
+            mod_license            : mod_license,
+            mod_version            : mod_version,
+            mod_authors            : mod_authors,
+            mod_description        : mod_description
+    ]
+    inputs.properties replaceProperties
+    expand replaceProperties
+    from 'src/main/templates'
+    into 'build/generated/sources/modMetadata'
+}
+sourceSets.main.resources.srcDir generateModMetadata
+neoForge.ideSyncTask generateModMetadata
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            artifactId = 'ars_resources'
+            from components.java
+        }
+    }
+    repositories {
+        maven { url "file://${project.projectDir}/repo" }
+    }
+}

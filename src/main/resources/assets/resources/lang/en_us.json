@@ -1,0 +1,19 @@
+{
+  "block.resources.source_vessel": "Source Vessel",
+  "resources.vessel.bound": "Inventory linked to the Source Vessel.",
+  "resources.vessel.removed": "Inventory unlinked from the Source Vessel.",
+  "resources.vessel.cleared": "Cleared all of the Source Vessel's linked inventories.",
+  "resources.vessel.not_inventory": "That block has no inventory to link.",
+  "resources.vessel.too_far": "That inventory is too far away (max %s blocks).",
+  "resources.vessel.not_copyable": "The Source Vessel cannot copy %s.",
+  "resources.vessel.tooltip.empty": "Insert an item to copy",
+  "resources.vessel.tooltip.copying": "Copying: %s",
+  "resources.vessel.tooltip.source": "Source: %s / %s",
+  "resources.vessel.tooltip.links": "Linked inventories: %s",
+  "resources.vessel.status.not_configured": "Paused: this item can no longer be copied",
+  "resources.vessel.status.no_link": "Paused: link an inventory with the Dominion Wand",
+  "resources.vessel.status.output_full": "Paused: linked inventories are full",
+  "resources.vessel.status.no_source": "Paused: no source in nearby jars",
+  "emi.category.resources.source_vessel": "Source Vessel",
+  "resources.emi.source_cost": "Source: %s"
+}

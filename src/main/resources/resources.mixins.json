@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "fun.dungeon.debauchery.arsresources.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "ArsDecoTargetsMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
